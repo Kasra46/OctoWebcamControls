@@ -1,0 +1,73 @@
+{% extends "octoprint/plugins/settings/settings.jinja2" %}
+
+{% block additional_js %}
+{{ super() }}
+<script>
+    $(function() {
+        function WebcamControlViewModel(parameters) {
+            var self = this;
+
+            self.settings = parameters[0];
+
+            self.hostname = ko.observable();
+            self.username = ko.observable();
+            self.password = ko.observable();
+            self.port = ko.observable();
+
+            self.onBeforeBinding = function() {
+                self.hostname(self.settings.settings.plugins.webcamcontrol.hostname());
+                self.username(self.settings.settings.plugins.webcamcontrol.username());
+                self.password(self.settings.settings.plugins.webcamcontrol.password());
+                self.port(self.settings.settings.plugins.webcamcontrol.port());
+            };
+
+            self.onSettingsHidden = function() {
+                self.settings.settings.plugins.webcamcontrol.hostname(self.hostname());
+                self.settings.settings.plugins.webcamcontrol.username(self.username());
+                self.settings.settings.plugins.webcamcontrol.password(self.password());
+                self.settings.settings.plugins.webcamcontrol.port(self.port());
+            };
+        }
+
+        OCTOPRINT_VIEWMODELS.push({
+            construct: WebcamControlViewModel,
+            dependencies: ["settingsViewModel"],
+            elements: ["#settings_plugin_webcamcontrol"]
+        });
+    });
+</script>
+{% endblock %}
+
+{% block additional_css %}
+{{ super() }}
+<style>
+    .webcamcontrol-settings {
+        margin-top: 20px;
+    }
+    .webcamcontrol-settings .form-group {
+        margin-bottom: 15px;
+    }
+</style>
+{% endblock %}
+
+{% block settings %}
+<div class="webcamcontrol-settings">
+    <h3>SSH Connection Settings</h3>
+    <div class="form-group">
+        <label for="webcamcontrol_hostname">Hostname</label>
+        <input type="text" class="form-control" id="webcamcontrol_hostname" data-bind="value: hostname">
+    </div>
+    <div class="form-group">
+        <label for="webcamcontrol_username">Username</label>
+        <input type="text" class="form-control" id="webcamcontrol_username" data-bind="value: username">
+    </div>
+    <div class="form-group">
+        <label for="webcamcontrol_password">Password</label>
+        <input type="password" class="form-control" id="webcamcontrol_password" data-bind="value: password">
+    </div>
+    <div class="form-group">
+        <label for="webcamcontrol_port">Port</label>
+        <input type="number" class="form-control" id="webcamcontrol_port" data-bind="value: port">
+    </div>
+</div>
+{% endblock %} 

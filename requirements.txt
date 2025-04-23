@@ -1,0 +1,5 @@
+paramiko==2.7.2
+werkzeug==2.0.1 
+flask==2.0.1
+paramiko==2.7.2
+werkzeug==2.0.1 

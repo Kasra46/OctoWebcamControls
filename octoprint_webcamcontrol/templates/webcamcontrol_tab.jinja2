@@ -1,0 +1,116 @@
+{% extends "octoprint/plugins/tab.jinja2" %}
+
+{% block additional_js %}
+{{ super() }}
+<script>
+    $(function() {
+        function WebcamControlTabViewModel(parameters) {
+            var self = this;
+
+            self.status = ko.observable("");
+
+            self.executeCommand = function(endpoint) {
+                self.status("Executing command...");
+                
+                $.ajax({
+                    url: endpoint,
+                    type: "POST",
+                    success: function(response) {
+                        self.status("Command executed successfully!");
+                    },
+                    error: function(xhr, status, error) {
+                        self.status("Error: " + error);
+                    }
+                });
+            };
+        }
+
+        OCTOPRINT_VIEWMODELS.push({
+            construct: WebcamControlTabViewModel,
+            dependencies: [],
+            elements: ["#tab_plugin_webcamcontrol"]
+        });
+    });
+</script>
+{% endblock %}
+
+{% block additional_css %}
+{{ super() }}
+<style>
+    .webcamcontrol-tab {
+        padding: 20px;
+    }
+    .button-group {
+        margin: 20px 0;
+    }
+    .button-group h2 {
+        color: #333;
+        margin-bottom: 10px;
+        font-size: 1.2em;
+    }
+    .webcamcontrol-tab button {
+        padding: 10px 20px;
+        font-size: 16px;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        margin: 5px;
+        min-width: 150px;
+    }
+    .start-button {
+        background-color: #4CAF50;
+    }
+    .start-button:hover {
+        background-color: #45a049;
+    }
+    .stop-button {
+        background-color: #f44336;
+    }
+    .stop-button:hover {
+        background-color: #d32f2f;
+    }
+    .quality-button {
+        background-color: #2196F3;
+    }
+    .quality-button:hover {
+        background-color: #1976D2;
+    }
+    .config-button {
+        background-color: #9C27B0;
+    }
+    .config-button:hover {
+        background-color: #7B1FA2;
+    }
+    #status {
+        margin-top: 20px;
+        color: #666;
+        min-height: 24px;
+    }
+</style>
+{% endblock %}
+
+{% block tab %}
+<div class="webcamcontrol-tab">
+    <div class="button-group">
+        <h2>Stream Control</h2>
+        <button class="start-button" data-bind="click: function() { executeCommand('/plugin/webcamcontrol/execute') }">Start Webcam</button>
+        <button class="stop-button" data-bind="click: function() { executeCommand('/plugin/webcamcontrol/endstream') }">End Stream</button>
+    </div>
+
+    <div class="button-group">
+        <h2>Video Quality</h2>
+        <button class="quality-button" data-bind="click: function() { executeCommand('/plugin/webcamcontrol/fhd') }">FHD Quality</button>
+        <button class="quality-button" data-bind="click: function() { executeCommand('/plugin/webcamcontrol/qhd') }">QHD Quality</button>
+        <button class="quality-button" data-bind="click: function() { executeCommand('/plugin/webcamcontrol/quality960') }">960 Quality</button>
+    </div>
+
+    <div class="button-group">
+        <h2>System Control</h2>
+        <button class="config-button" data-bind="click: function() { executeCommand('/plugin/webcamcontrol/restartv4l2') }">Restart v4l2</button>
+        <button class="config-button" data-bind="click: function() { executeCommand('/plugin/webcamcontrol/webcamconfig') }">Webcam Config</button>
+    </div>
+
+    <div id="status" data-bind="text: status"></div>
+</div>
+{% endblock %} 
